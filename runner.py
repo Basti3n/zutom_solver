@@ -14,14 +14,14 @@ from dictionnary import DICTIONNARY
 
 @dataclass
 class Runner:
-    website_url: str = field(init=False, default='https://zutom.z-lan.fr/infinit?w1=784&w2=1241&w3=845&w4=117&w5=424&')
+    website_url: str = field(init=False, default='https://zutom.z-lan.fr/hard?w1=215850&w2=358972&w3=314879&w4=295691&w5=165907&')
     regex: List[str] = field(init=False)
 
 
     def run(self):
         driver = self._init_window()
 
-        for i in range(0, 5):
+        for i in range(0, 30):
             self._process_answers(driver)
 
         sleep(5)
@@ -36,6 +36,7 @@ class Runner:
             if contained_letters:
                 words = self._filter_by_known_values(words, contained_letters)
             words = Solver.filter_with_regex(self.regex, words)
+            words = sorted(words, key=lambda x: len(set(x)), reverse=True)
             word = words[0]
             self._send_keys(word, driver)
 
