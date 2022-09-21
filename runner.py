@@ -14,17 +14,24 @@ from dictionnary import DICTIONNARY
 
 @dataclass
 class Runner:
-    website_url: str = field(init=False, default='https://zutom.z-lan.fr/hard?w1=215850&w2=358972&w3=314879&w4=295691&w5=165907&')
+    speed: float = field(default=1.0)
     regex: List[str] = field(init=False)
+    # s_url: str = field(init=False, default='https://zutom.z-lan.fr/hard')
+    s_url: str = field(init=False, default='https://zutom.z-lan.fr/infinit')
 
 
     def run(self):
         driver = self._init_window()
 
-        for i in range(0, 30):
-            self._process_answers(driver)
-
-        sleep(5)
+        while True:
+            if driver.find_element(By.CSS_SELECTOR, 'p[data-popup-text]').text.startswith('Perdu'):
+                print('Lost !')
+                driver.get(self.s_url)
+            elif driver.find_element(By.CSS_SELECTOR, 'span[data-counter]').text=='0':
+                print('Won !')
+                driver.get(self.s_url)
+            else:
+                self._process_answers(driver)
 
     def _process_answers(self, driver: webdriver.Chrome):
         contained_letters = []
@@ -45,7 +52,7 @@ class Runner:
                 break
 
             # filter by word containing value
-        sleep(2)
+        sleep(3/self.speed)
 
     @staticmethod
     def _filter_by_known_values(words: List[str], contained_letters: List[str]):
@@ -100,10 +107,9 @@ class Runner:
 
         driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
 
-        driver.get(self.website_url)
+        driver.get(self.s_url)
 
         driver.maximize_window()
-        sleep(2)
         return driver
 
     @staticmethod
